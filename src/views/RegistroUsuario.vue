@@ -40,7 +40,7 @@
 </template>
   
   <script>
-import axios from 'axios';
+const { axios, url } = require('../config');
 
   export default {
     data() {
@@ -52,33 +52,45 @@ import axios from 'axios';
         puesto: "",
         correo: "",
         contrasena: "",
-        puestos: [] // Obtener la lista de puestos desde tu base de datos o API
+        puestos: []
       };
     },
 
     beforeMount() {
-      axios.get('http://localhost:3000/api/puestos')
+      axios.get(url + '/api/puestos/puestos')
         .then(response => {
-          console.log(response.data);
           this.puestos = response.data.puestos;
-          // this.$router.push('/dashboard');
         })
         .catch(error => {
-          console.error(error.response); // Cambiado de alert a console.error
+          console.error(error.response);
         });
     },
 
     methods: {
       registrarUsuario() {
         // Implementa la lógica para enviar los datos del formulario al servidor
-        console.log({
-          nombre: this.nombre,
-          apellidoPaterno: this.apellidoPaterno,
-          apellidoMaterno: this.apellidoMaterno,
-          numeroControl: this.numeroControl,
-          puesto: this.puesto,
-          correo: this.correo,
-          contrasena: this.contrasena
+        const userData = {
+          nombre_usuario: this.nombre,
+          apellidoP_usuario: this.apellidoPaterno,
+          apellidoM_usuario: this.apellidoMaterno,
+          numero_control: this.numeroControl,
+          id_puesto: this.puesto,
+          correo_usuario: this.correo,
+          contrasena: this.contrasena,
+          id_status: 1,
+          id_rol: 2
+        };
+        axios.post('http://localhost:3000/api/signup', userData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(response => {
+          alert("¡Registro exitoso!");
+        })
+        .catch(error => {
+          // Manejar errores, por ejemplo, mostrar un mensaje de error al usuario
+          alert(error.response.data.message);
         });
       }
     },

@@ -64,20 +64,18 @@ export default {
         alert('Por favor, complete todos los campos.');
         return;
       }
-
       const userData = {
-        email: this.email,
-        password: this.password,
+        correo_usuario: this.email,
+        contrasena: this.password,
       };
-
       axios.post('http://localhost:3000/api/login', userData, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
       .then(response => {
-        console.log(response.data);
-        // Redirigir al usuario a la página de inicio de sesión exitosa
+        console.log(response);
+        //localStorage.setitem( 'token', JSON.stringify(response.data) );
       })
       .catch(error => {
         console.error(error.response);
