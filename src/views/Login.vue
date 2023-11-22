@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+const { axios, url } = require('../config');
 
 export default {
   name: 'LoginPage',
@@ -56,7 +56,7 @@ export default {
     },
 
     irARegistro() {
-      this.$router.push({ name: 'Registrar Nuevo Usuario' });
+      this.$router.push({ name: 'Signin' });
     },
 
     login() {
@@ -68,19 +68,20 @@ export default {
         correo_usuario: this.email,
         contrasena: this.password,
       };
-      axios.post('http://localhost:3000/api/login', userData, {
+      axios.post(url + '/api/login', userData, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
       .then(response => {
-        console.log(response);
+        localStorage.setItem('token', response.data.token);
+        this.$router.push({ name: 'Devices' });
         //localStorage.setitem( 'token', JSON.stringify(response.data) );
       })
       .catch(error => {
         console.error(error.response);
         // Manejar errores, por ejemplo, mostrar un mensaje de error al usuario
-        alert('Error al iniciar sesión. Verifique sus credenciales.');
+        alert('Error: '+ error);
       });
     }
   },

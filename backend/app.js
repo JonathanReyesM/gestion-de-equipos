@@ -2,17 +2,21 @@ const express = require('express');
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 const cryp = require('crypto');
 const bodyParser = require('body-parser');
 const puestosRouter = require('./endpoints/puestos');
 const equiposRouter = require('./endpoints/equipos');
+const usuariosRouter = require('./endpoints/usuarios');
 const dbConfig = require('./config');
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 app.use(express.json());
 app.use('/api', puestosRouter);
 app.use('/api', equiposRouter);
+app.use('/api', usuariosRouter);
 
 //Permitir conexiones no seguras
 app.use((req, res, next) => {
@@ -86,11 +90,11 @@ app.post("/api/login", async (req, res) => {
           });
         } else {
           connection.end();
-          return res.status(401).json({ error: "Credenciales Incorrectas", message: "El usuario o contraseña son incorrectas" });
+          return res.status(401).json({ error: "Credenciales Incorrectas1", message: "El usuario o contraseña son incorrectas" });
         }
       } else {
         connection.end();
-        return res.status(401).json({ error: "Credenciales Incorrectas", message: "El usuario o contraseña son incorrectas" });
+        return res.status(401).json({ error: "Credenciales Incorrectas2", message: "El usuario o contraseña son incorrectas" });
       }
     } else {
       res.status(400).json({ error: "Solicitud Incorrecta", message: "Faltan datos para procesar la información" });

@@ -80,7 +80,7 @@ const { axios, url } = require('../config');
           id_status: 1,
           id_rol: 2
         };
-        axios.post('http://localhost:3000/api/signup', userData, {
+        axios.post(url + '/api/signup', userData, {
           headers: {
             'Content-Type': 'application/json',
           },

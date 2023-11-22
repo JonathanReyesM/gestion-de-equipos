@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../views/Login.vue';
 import RegistroUsuario from '../views/RegistroUsuario.vue';
+import EquiposList from '../views/EquiposList.vue';
 
 const routes = [
   { path: '/login', component: Login },
-  { path: '/RegistroUsuario', name: 'Registrar Nuevo Usuario', component: RegistroUsuario },
+  { path: '/signin', name: 'Signin', component: RegistroUsuario },
+  { path: '/devices', name: 'Devices', component: EquiposList },
   // Otras rutas
 ];
 

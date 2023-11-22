@@ -16,16 +16,16 @@ router.use(cors({
 }));
 
 //Obtener todos los puestos
-router.get("/equipos/equipos", verifyToken, async (req, res) => {
+router.get("/usuarios/usuarios", verifyToken, async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     connection.connect();
-    const query = "SELECT * FROM gde_equipos";
+    const query = "SELECT * FROM gra_usuarios";
     const [results] = await connection.execute(query);
     if (results.length > 0) {
-      const equipos = results;
+      const usuarios = results;
       res.send({
-        equipos: equipos,
+        usuarios: usuarios,
       });
     }else{
       connection.end;
@@ -36,115 +36,33 @@ router.get("/equipos/equipos", verifyToken, async (req, res) => {
   }
 });
 
-//Obtener todos los puestos
-router.get("/equipos/main", verifyToken, async (req, res) => {
+//Actualizar usuario
+router.put('/usuarios/update/:id', verifyToken, async (req, res) => {
   try {
-    const connection = await mysql.createConnection(dbConfig);
-    connection.connect();
-    const query = `
-      SELECT 
-              gde_equipos.id_equipo, 
-              gde_equipos.descripcion_equipo, 
-              gde_equipos.marca_equipo, 
-              gde_equipos.modelo_equipo, 
-              gde_equipos.serial_equipo, 
-              gde_equipos.fecha_equipo, 
-              gde_equipos.fecha_garantia, 
-              gra_usuarios.nombre_usuario, 
-              gra_usuarios.apellidoP_usuario, 
-              gra_usuarios.apellidoM_usuario, 
-              gde_categoria_equipos.nombre_categoria 
-          FROM 
-              gde_equipos 
-          LEFT JOIN 
-              gra_usuarios ON gde_equipos.id_usuario = gra_usuarios.id_usuario 
-          INNER JOIN 
-              gde_categoria_equipos ON gde_equipos.id_categoria = gde_categoria_equipos.id_categoria;
-      `;
-    const [results] = await connection.execute(query);
-    if (results.length > 0) {
-      const equipos = results;
-      res.send({
-        equipos: equipos,
-      });
-    }else{
-      connection.end;
-      return res.status(204).send({ message: 'No Content' });
-    }
-  } catch (err) {
-    res.status(500).send({ error: "Error interno del servidor", message: err.message });
-  }
-});
-
-//Agregar nuevo equipo
-router.post('/equipos/add', verifyToken, async (req, res) => {
-  try {
+    const id_usuario = req.params.id;
     const {
-      id_usuario,
-      descripcion_equipo,
-      marca_equipo,
-      modelo_equipo,
-      serial_equipo,
-      fecha_equipo,
-      fecha_garantia,
-      id_estado,
-      id_status,
-      id_categoria,
-    } = req.body;
-    const connection = await mysql.createConnection(dbConfig);
-    const query = 'INSERT INTO gde_equipos (id_usuario, descripcion_equipo, marca_equipo, modelo_equipo, serial_equipo, fecha_equipo, fecha_garantia, id_estado, id_status, id_categoria) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [
-      id_usuario || null,
-      descripcion_equipo,
-      marca_equipo,
-      modelo_equipo,
-      serial_equipo || null,
-      fecha_equipo || null,
-      fecha_garantia || null,
-      id_estado,
-      id_status,
-      id_categoria,
-    ];
-    await connection.execute(query, values);
-    connection.end();
-    return res.status(201).json({ message: 'Registro agregado exitosamente' });
-  } catch (error) {
-    return res.status(500).json({ error: 'Error interno del servidor', message: error.message });
-  }
-});
-
-//Actualizar equipo
-router.put('/equipos/update/:id', verifyToken, async (req, res) => {
-  try {
-    const id_equipo = req.params.id;
-    const {
-      id_usuario,
-      descripcion_equipo,
-      marca_equipo,
-      modelo_equipo,
-      serial_equipo,
-      fecha_equipo,
-      fecha_garantia,
-      id_estado,
-      id_status,
-      id_categoria,
+        nombre_usuario,
+        apellidoM_usuario,
+        apellidoP_usuario,
+        numero_control,
+        id_puesto,
+        id_status,
+        correo_usuario, 
+        id_rol
     } = req.body;
     
     const connection = await mysql.createConnection(dbConfig);
-    const query = 'UPDATE gde_equipos SET id_usuario=?, descripcion_equipo=?, marca_equipo=?, modelo_equipo=?, serial_equipo=?, fecha_equipo=?, fecha_garantia=?, id_estado=?, id_status=?, id_categoria=? WHERE id_equipo=?';
+    const query = 'UPDATE gra_usuarios nombre_usuario = ?, apellidoM_usuario = ?, apellidoP_usuario = ?, numeero_control = ?, id_puesto = ?, id_status = ?, correo_usuario = ?, id_rol = ? WHERE id_equipo=?';
 
     const updateData = [
-      id_usuario || null,
-      descripcion_equipo,
-      marca_equipo,
-      modelo_equipo,
-      serial_equipo || null,
-      fecha_equipo || null,
-      fecha_garantia || null,
-      id_estado,
-      id_status,
-      id_categoria,
-      id_equipo,
+        nombre_usuario,
+        apellidoM_usuario || NULL,
+        apellidoP_usuario,
+        numero_control,
+        id_puesto,
+        id_status,
+        correo_usuario || NULL, 
+        id_rol || NULL
     ];
 
     const [result] = await connection.execute(query, updateData);
@@ -162,13 +80,13 @@ router.put('/equipos/update/:id', verifyToken, async (req, res) => {
 });
 
 //Eliminar Equipo
-router.delete('/equipos/delete/:id', verifyToken, async (req, res) => {
+router.delete('/usuarios/delete/:id', verifyToken, async (req, res) => {
   let connection;
   try {
     const id = req.params.id;
 
     connection = await mysql.createConnection(dbConfig);
-    const query = 'DELETE FROM gde_equipos WHERE id_equipo = ?';
+    const query = 'DELETE FROM gra_usuarios WHERE id_usuario = ?';
 
     const [result] = await connection.execute(query, [id]);
 
@@ -189,12 +107,12 @@ router.delete('/equipos/delete/:id', verifyToken, async (req, res) => {
 });
 
 //Obtener equipo por id
-router.get("/equipos/equipos/:id", verifyToken, async (req, res) => {
+router.get("/usuarios/usuarios/:id", verifyToken, async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     const id = req.params.id;
     connection.connect();
-    const query = "SELECT * FROM gde_equipos WHERE id_equipo=? ";
+    const query = "SELECT * FROM gra_usuarios WHERE id_usuario=? ";
     const [result] = await connection.execute(query, [id]);
     if (result.length > 0) {
       const equipo = result;
